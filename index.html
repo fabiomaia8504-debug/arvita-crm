@@ -319,7 +319,7 @@
 
     <div class="form-group">
       <label>E-mail de Acesso</label>
-      <input type="text" class="form-control" id="login-user" placeholder="Digite seu e-mail">
+      <input type="text" class="form-control" id="login-user" placeholder="Digite seu e-mail" style="text-transform: lowercase;">
     </div>
     <div class="form-group">
       <label>Senha</label>
@@ -538,7 +538,7 @@
     <div class="modal-body">
       <input type="hidden" id="tec-id">
       <div class="form-group"><label>Nome do Técnico</label><input type="text" class="form-control" id="tec-nome"></div>
-      <div class="form-group"><label>E-mail / Login de Acesso</label><input type="email" class="form-control" id="tec-email" placeholder="Ex: joao@arvita.com"></div>
+      <div class="form-group"><label>E-mail / Login de Acesso</label><input type="email" class="form-control" id="tec-email" placeholder="Ex: joao@arvita.com" style="text-transform: lowercase;"></div>
       <div class="form-group"><label>Senha</label><input type="text" class="form-control" id="tec-senha" placeholder="Digite uma senha"></div>
       <div class="form-group">
         <label>Cargo / Permissão</label>
@@ -655,15 +655,22 @@ function exportarBanco() {
 }
 
 function fazerLogin() {
-  const user = document.getElementById('login-user').value.trim();
-  const pass = document.getElementById('login-pass').value;
+  // O trim() remove espaços acidentais no início ou fim. O toLowerCase() ignora maiúsculas.
+  const user = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value.trim();
   
   if (!isFirebaseReady) {
     document.getElementById('login-status').innerText = "Conectando ao banco... aguarde.";
     return;
   }
 
-  const conta = state.tecnicos.find(t => t.email === user && t.senha === pass);
+  if (state.tecnicos.length === 0) {
+    document.getElementById('login-status').innerText = "Buscando dados... aguarde 2 segundos e tente novamente.";
+    document.getElementById('login-status').style.color = "var(--warn-text)";
+    return;
+  }
+
+  const conta = state.tecnicos.find(t => t.email.trim().toLowerCase() === user && t.senha.trim() === pass);
   
   if (conta) {
     state.currentUser = conta;
@@ -694,7 +701,7 @@ setTimeout(() => {
       if (contaAtualizada) { state.currentUser = contaAtualizada; iniciarApp(); }
     }
   }
-}, 2000);
+}, 2500); // Aumentei um pouco o tempo para garantir que o celular carregue os dados
 
 function iniciarApp() {
   document.getElementById('login-screen').style.display = 'none';
@@ -1030,9 +1037,9 @@ function abrirModalTecnico(id = null) {
   abrirModal('modal-tecnico');
 }
 function salvarTecnico() {
-  const id = document.getElementById('tec-id').value, nome = document.getElementById('tec-nome').value, email = document.getElementById('tec-email').value, senha = document.getElementById('tec-senha').value;
+  const id = document.getElementById('tec-id').value, nome = document.getElementById('tec-nome').value, email = document.getElementById('tec-email').value.trim().toLowerCase(), senha = document.getElementById('tec-senha').value.trim();
   if (!nome || !email || !senha) { alert("Preencha tudo."); return; }
-  if (state.tecnicos.some(t => t.email === email && t.id != id)) { alert("E-mail em uso."); return; }
+  if (state.tecnicos.some(t => t.email.toLowerCase() === email && t.id != id)) { alert("E-mail em uso."); return; }
   const data = { nome, email, senha, cargo: document.getElementById('tec-cargo').value };
   if (id) {
     Object.assign(state.tecnicos.find(x => x.id == id), data);
@@ -1082,7 +1089,6 @@ function imprimirOS() {
   const totalGeral = totalVendaPecas + totalMaoObra + totalDeslocamento;
   const win = window.open('', '_blank');
   
-  // O código abaixo usa concatenação para evitar erros de sintaxe e tags prematuras.
   win.document.write(
     '<html><head><title>OS #' + os.numero + ' - Arvita</title><style>' +
     "body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;padding:40px;color:#333;line-height:1.5}.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0077FF;padding-bottom:20px;margin-bottom:20px}.logo h1{margin:0;font-size:28px;color:#0A1B33;letter-spacing:2px}.logo p{margin:0;font-size:12px;color:#0077FF;font-weight:bold;letter-spacing:4px}.os-info{text-align:right}.os-info h2{margin:0;font-size:20px;color:#0A1B33}.os-info p{margin:4px 0;font-size:14px}.section{margin-bottom:20px}.section-title{background:#f0f4f8;padding:8px 12px;font-size:12px;font-weight:bold;color:#0077FF;border-radius:4px;margin-bottom:10px;text-transform:uppercase}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px}.grid div{padding:4px 0}.grid strong{color:#555}table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#f9f9f9;color:#333}.totals-table{margin-top:15px;width:50%;margin-left:auto}.totals-table td{border:none;padding:5px 10px}.totals-table tr.total-row td{font-size:18px;font-weight:bold;color:#16a34a;border-top:2px solid #333}.signatures{display:flex;justify-content:space-between;margin-top:60px}.sig-box{width:45%;border-top:1px solid #333;text-align:center;padding-top:10px;font-size:14px}@media print{body{padding:0}.section-title{-webkit-print-color-adjust:exact}}" +
