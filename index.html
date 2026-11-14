@@ -980,6 +980,14 @@ function renderDetailHTML() {
   `;
 }
 
+// ==========================================
+// FUNÇÃO QUE ESTAVA FALTANDO (CORRIGIDA)
+// ==========================================
+function mudarTab(tab) {
+  state.currentTab = tab;
+  render();
+}
+
 function renderAlmoxarifadoHTML() {
   return `<div class="card-info table-container"><table class="data-table"><thead><tr><th>Peça / Material</th><th>Custo (R$)</th><th>Venda (R$)</th><th>Estoque</th><th style="text-align:right;">Ações</th></tr></thead><tbody>${state.almoxarifado.map(a => `<tr><td style="font-weight:600;">${a.nome}</td><td style="color:var(--text-muted);">R$ ${a.custo.toFixed(2)}</td><td style="font-weight:700; color:var(--blue);">R$ ${a.venda.toFixed(2)}</td><td><span class="badge-status" style="background:${a.estoque > 0 ? '#DCFCE7' : '#FEE2E2'}; color:${a.estoque > 0 ? '#166534' : '#B91C1C'}; border:none;">${a.estoque} un.</span></td><td><div class="table-actions"><button class="btn btn-outline btn-sm" onclick="abrirModalAlmox(${a.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="excluirAlmox(${a.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table></div>`;
 }
