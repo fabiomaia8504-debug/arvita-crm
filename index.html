@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Arvita Climatização - CRM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,6 +58,7 @@
     position: fixed; inset: 0; 
     background: linear-gradient(135deg, var(--navy) 0%, #112a4f 100%); 
     display: flex; align-items: center; justify-content: center; z-index: 9999; 
+    padding: 20px;
   }
   .login-box { 
     background: var(--white); padding: 40px; border-radius: 16px; 
@@ -66,8 +67,16 @@
   .login-box .logo-container { margin-bottom: 30px; }
   .login-box .logo-arvita-text .white { color: var(--navy); }
 
-  /* ================= SIDEBAR ================= */
-  .sidebar { width: 260px; background-color: var(--navy); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; }
+  /* ================= SIDEBAR & OVERLAY MOBILE ================= */
+  .overlay-mobile {
+    display: none; position: fixed; inset: 0; background: rgba(10, 27, 51, 0.5); z-index: 999;
+  }
+  .overlay-mobile.active { display: block; }
+
+  .sidebar { 
+    width: 260px; background-color: var(--navy); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; 
+    transition: transform 0.3s ease; z-index: 1000;
+  }
   .brand { padding: 24px 20px; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
   .brand .logo-av-mark { width: 50px; height: 40px; }
   .brand .logo-arvita-text { font-size: 1.4rem; }
@@ -89,12 +98,15 @@
   .btn-backup:hover { background: var(--blue); }
 
   /* ================= MAIN CONTENT ================= */
-  .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
   .topbar { 
     height: 70px; background: var(--white); border-bottom: 1px solid var(--border); 
     display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; 
     box-shadow: 0 1px 3px rgba(0,0,0,0.02);
   }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--navy); }
+  
   .topbar-title { font-size: 1.2rem; font-weight: 700; color: var(--navy); }
   .topbar-actions { display: flex; gap: 16px; align-items: center; }
   
@@ -139,7 +151,6 @@
   .kpi-card.km { border-left: 4px solid var(--cyan); }
 
   .dash-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  @media (max-width: 900px) { .dash-panels { grid-template-columns: 1fr; } }
   .panel { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); padding: 20px; }
   .panel h3 { font-size: 1rem; font-weight: 800; color: var(--navy); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
   
@@ -152,16 +163,16 @@
   .bar-value { width: 80px; text-align: right; font-weight: 700; color: var(--navy); }
 
   /* ================= FILTROS E LISTA ================= */
-  .filters { display: flex; gap: 16px; margin-bottom: 24px; align-items: center; }
+  .filters { display: flex; gap: 16px; margin-bottom: 24px; align-items: center; flex-wrap: wrap; }
   .tabs-list { display: flex; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 4px; box-shadow: var(--shadow); }
   .tab-list-btn { padding: 8px 20px; border: 0; background: transparent; border-radius: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; font-family: inherit; }
   .tab-list-btn.active { background: var(--navy); color: var(--white); }
   
-  .search-box { flex: 1; background: var(--white); padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); display: flex; gap: 10px; align-items: center; box-shadow: var(--shadow); }
+  .search-box { flex: 1; background: var(--white); padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); display: flex; gap: 10px; align-items: center; box-shadow: var(--shadow); min-width: 200px; }
   .search-input { flex: 1; border: 0; outline: none; font-size: 0.9rem; color: var(--navy); background: transparent; font-family: inherit; }
   .search-input::placeholder { color: var(--silver); }
 
-  .os-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+  .os-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
   .card-os { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); display: flex; overflow: hidden; cursor: pointer; transition: 0.2s; box-shadow: var(--shadow); }
   .card-os:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--cyan); }
   
@@ -175,7 +186,7 @@
   .ordem-num { font-size: 1.1rem; font-weight: 800; color: var(--navy); }
   .badge-status { background: var(--white); border: 1px solid var(--border); color: var(--navy); font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; margin-top: 8px; }
   
-  .card-right { flex: 1; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+  .card-right { flex: 1; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
   .card-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
   .sem-garantia { font-size: 0.65rem; font-weight: 700; color: var(--silver); text-transform: uppercase; }
   .tech { font-size: 0.75rem; font-weight: 600; color: var(--blue); display: flex; align-items: center; gap: 4px; }
@@ -187,29 +198,28 @@
 
   /* ================= DETALHE ================= */
   .detail-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 24px; }
-  .detail-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  .detail-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 16px; }
   .detail-title h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 4px; color: var(--navy); }
   .detail-title p { font-size: 1rem; color: var(--text-muted); font-weight: 500; }
   .detail-actions { display: flex; gap: 12px; flex-wrap: wrap; }
   
-  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-top: 16px; gap: 24px; }
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-top: 16px; gap: 24px; overflow-x: auto; white-space: nowrap; padding-bottom: 4px; }
   .tab { padding: 12px 0; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 8px; background: none; border-top: 0; border-left: 0; border-right: 0; transition: 0.2s; font-family: inherit; }
   .tab:hover { color: var(--navy); }
   .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
   
   .detail-body { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 24px; }
-  @media (max-width: 1024px) { .detail-body { grid-template-columns: 1fr; } }
   
   .card-info { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; box-shadow: var(--shadow); }
   .card-info-header { padding: 16px; background: #F8FAFC; border-bottom: 1px solid var(--border); font-size: 0.75rem; font-weight: 800; color: var(--silver); text-transform: uppercase; letter-spacing: 0.5px; }
-  .info-row { display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .info-row { display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; gap: 16px; }
   .info-row:last-child { border-bottom: 0; }
   .info-label { color: var(--text-muted); font-weight: 500; }
   .info-value { font-weight: 600; text-align: right; max-width: 60%; color: var(--navy); }
 
   /* ================= ABA PEÇAS E ORÇAMENTO ================= */
   .alert-warn { background: var(--warn-bg); color: var(--warn-text); padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; border: 1px solid #FDE68A; display: flex; gap: 8px; align-items: center; }
-  .peca-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); }
+  .peca-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); gap: 16px;}
   .peca-info h4 { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
   .peca-info p { font-size: 0.8rem; color: var(--text-muted); }
   .peca-info p b { color: var(--navy); }
@@ -231,9 +241,10 @@
   .total-box span { font-size: 1.6rem; font-weight: 800; color: #4ade80; }
 
   /* ================= TABELAS E ROTAS ================= */
-  .data-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); }
-  .data-table th { background: #F8FAFC; padding: 16px; text-align: left; font-size: 0.75rem; font-weight: 800; color: var(--silver); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-  .data-table td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--navy); }
+  .card-info.table-container { overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
+  .data-table { width: 100%; border-collapse: collapse; background: var(--white); min-width: 600px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .data-table th { background: #F8FAFC; padding: 16px; text-align: left; font-size: 0.75rem; font-weight: 800; color: var(--silver); text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .data-table td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--navy); white-space: nowrap; }
   .data-table tr:last-child td { border-bottom: 0; }
   .data-table tr:hover { background: #F8FAFC; }
   .table-actions { display: flex; gap: 8px; justify-content: flex-end; }
@@ -241,7 +252,7 @@
   .rota-grupo { margin-bottom: 32px; }
   .rota-cidade { font-size: 1.2rem; font-weight: 800; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
   .rota-lista { display: flex; flex-direction: column; gap: 12px; }
-  .rota-item { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); }
+  .rota-item { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); flex-wrap: wrap; gap: 12px; }
   .rota-info h4 { font-size: 1rem; margin-bottom: 4px; color: var(--navy); }
   .rota-info p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
   .rota-info .end { font-size: 0.8rem; color: var(--silver); }
@@ -267,21 +278,71 @@
   .foto-upload-area:hover { border-color: var(--cyan); background: #E0F2FE; }
   .foto-upload-area input[type="file"] { display: none; }
   .foto-upload-icon { font-size: 2.5rem; margin-bottom: 12px; color: var(--blue); }
-  .fotos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-top: 20px; }
+  .fotos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px; margin-top: 20px; }
   .foto-item { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 1; background: var(--gray-bg); }
   .foto-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
   .btn-delete-foto { position: absolute; top: 8px; right: 8px; background: rgba(220, 38, 38, 0.9); color: white; border: 0; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; font-size: 0.8rem; }
 
-  .lightbox { position: fixed; inset: 0; background: rgba(10, 27, 51, 0.95); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 40px; }
+  .lightbox { position: fixed; inset: 0; background: rgba(10, 27, 51, 0.95); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
   .lightbox.open { display: flex; }
   .lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
   .lightbox-close { position: absolute; top: 20px; right: 20px; background: var(--white); border: 0; width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; font-weight: bold; color: var(--navy); display: grid; place-items: center; transition: 0.2s; }
-  .lightbox-close:hover { transform: scale(1.1); }
 
   .spinner { display: none; position: absolute; inset: 0; background: rgba(255,255,255,0.8); place-items: center; border-radius: var(--radius); z-index: 10; font-weight: 700; color: var(--blue); }
+
+  /* ================= RESPONSIVIDADE (MOBILE) ================= */
+  @media (max-width: 768px) {
+    /* Sidebar escondida por padrão */
+    .sidebar { position: fixed; top: 0; bottom: 0; left: -280px; width: 260px; }
+    .sidebar.active { transform: translateX(280px); }
+    
+    /* Topbar */
+    .menu-toggle { display: block; }
+    .topbar { padding: 0 16px; }
+    .topbar-title { font-size: 1rem; }
+    .user-profile span { display: none; } /* Esconde o nome do usuário, deixa só o avatar */
+    .btn-logout { padding: 6px 10px; font-size: 0.75rem; }
+
+    /* Content */
+    .content-scroll { padding: 16px; }
+    
+    /* Forçar grids de 2 colunas a virarem 1 coluna */
+    div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    
+    /* Dashboard e Lista */
+    .dash-grid { grid-template-columns: 1fr; }
+    .dash-panels { grid-template-columns: 1fr; gap: 16px; }
+    .os-grid { grid-template-columns: 1fr; }
+    .filters { flex-direction: column; align-items: stretch; }
+    
+    /* Detalhe */
+    .detail-header { padding: 16px; }
+    .detail-top { flex-direction: column; }
+    .detail-actions { width: 100%; flex-direction: column; }
+    .detail-actions .btn { width: 100%; justify-content: center; }
+    .detail-body { grid-template-columns: 1fr; gap: 16px; }
+    
+    /* Cálculos */
+    .calculos-box { grid-template-columns: 1fr; }
+    .calculo-item { flex-direction: column; align-items: stretch; }
+    .input-with-prefix { justify-content: space-between; margin-top: 4px; }
+    .input-with-prefix input { width: 40%; }
+    
+    /* Tabelas (scroll horizontal) */
+    .card-info.table-container { padding: 0; border: none; background: transparent; box-shadow: none; }
+    .data-table { min-width: 700px; } /* Força o scroll em vez de espremer o texto */
+    
+    /* Modais */
+    .modal { max-height: 100vh; border-radius: 0; }
+    .modal-overlay { padding: 0; }
+    .modal-head, .modal-body, .modal-foot { padding: 16px; }
+  }
 </style>
 </head>
 <body>
+
+<!-- OVERLAY MOBILE -->
+<div class="overlay-mobile" id="overlay-mobile" onclick="toggleSidebar()"></div>
 
 <!-- SVG DEFINITIONS FOR LOGO -->
 <svg width="0" height="0" style="display:none;">
@@ -386,7 +447,10 @@
 <!-- MAIN CONTENT -->
 <div class="main-content" id="main-content" style="display:none;">
   <header class="topbar">
-    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-left">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="page-title">Dashboard</div>
+    </div>
     <div class="topbar-actions">
       <div id="topbar-buttons"></div>
       <div class="user-profile">
@@ -600,6 +664,12 @@ let state = {
 };
 let isFirebaseReady = false;
 
+// CONTROLE DO MENU MOBILE
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('active');
+  document.getElementById('overlay-mobile').classList.toggle('active');
+}
+
 window.addEventListener('firebaseReady', () => {
   isFirebaseReady = true;
   document.getElementById('login-status').innerText = "Conectado à Nuvem!";
@@ -655,7 +725,6 @@ function exportarBanco() {
 }
 
 function fazerLogin() {
-  // O trim() remove espaços acidentais no início ou fim. O toLowerCase() ignora maiúsculas.
   const user = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value.trim();
   
@@ -690,6 +759,9 @@ function fazerLogout() {
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('login-pass').value = '';
   document.getElementById('login-status').innerText = '';
+  // Fecha o menu mobile se estiver aberto
+  document.getElementById('sidebar').classList.remove('active');
+  document.getElementById('overlay-mobile').classList.remove('active');
 }
 
 setTimeout(() => {
@@ -701,7 +773,7 @@ setTimeout(() => {
       if (contaAtualizada) { state.currentUser = contaAtualizada; iniciarApp(); }
     }
   }
-}, 2500); // Aumentei um pouco o tempo para garantir que o celular carregue os dados
+}, 2500);
 
 function iniciarApp() {
   document.getElementById('login-screen').style.display = 'none';
@@ -723,6 +795,12 @@ function iniciarApp() {
 }
 
 function navigate(view, id = null) {
+  // Fecha o menu automaticamente ao navegar no celular
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').classList.remove('active');
+    document.getElementById('overlay-mobile').classList.remove('active');
+  }
+
   if (state.currentUser.cargo !== 'Admin' && (view === 'dashboard' || view === 'tecnicos')) view = 'list';
   state.currentView = view;
   if (id) state.currentOSId = id;
@@ -804,7 +882,7 @@ function renderDashboardHTML() {
     <div class="dash-panels">
       <div class="panel"><h3>Top 5 Peças Utilizadas</h3>${pecasArray.length === 0 ? '<p style="color:var(--text-muted);font-size:0.9rem;">Sem dados.</p>' : ''}${pecasArray.map(p => `<div class="bar-chart-row"><div class="bar-label" title="${p[0]}">${p[0]}</div><div class="bar-container"><div class="bar-fill blue" style="width: ${(p[1]/maxPeca)*100}%"></div></div><div class="bar-value">${p[1]} un.</div></div>`).join('')}</div>
       <div class="panel"><h3>Lucro Líquido por Técnico</h3>${tecnicosArray.map(t => `<div class="bar-chart-row"><div class="bar-label">${t[0]}</div><div class="bar-container"><div class="bar-fill cyan" style="width: ${(t[1]/maxLucro)*100}%"></div></div><div class="bar-value">R$ ${t[1].toFixed(0)}</div></div>`).join('')}</div>
-      <div class="panel" style="grid-column: 1 / -1;"><h3>Status das Ordens de Serviço</h3><div style="display:flex; gap:20px; flex-wrap:wrap;">${Object.entries(statusCount).map(([status, count]) => { const pct = (count / totalOS) * 100; return `<div style="flex:1; min-width:150px; background:#F8FAFC; padding:16px; border-radius:8px; text-align:center; border:1px solid var(--border);"><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">${status}</div><div style="font-size:1.6rem; font-weight:800; color:var(--navy);">${count}</div><div style="height:6px; background:var(--gray-bg); border-radius:3px; margin-top:10px; overflow:hidden;"><div style="height:100%; width:${pct}%; background:var(--blue);"></div></div></div>`; }).join('')}</div></div>
+      <div class="panel" style="grid-column: 1 / -1;"><h3>Status das Ordens de Serviço</h3><div style="display:flex; gap:20px; flex-wrap:wrap;">${Object.entries(statusCount).map(([status, count]) => { const pct = (count / totalOS) * 100; return `<div style="flex:1; min-width:120px; background:#F8FAFC; padding:16px; border-radius:8px; text-align:center; border:1px solid var(--border);"><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">${status}</div><div style="font-size:1.6rem; font-weight:800; color:var(--navy);">${count}</div><div style="height:6px; background:var(--gray-bg); border-radius:3px; margin-top:10px; overflow:hidden;"><div style="height:100%; width:${pct}%; background:var(--blue);"></div></div></div>`; }).join('')}</div></div>
     </div>
   `;
 }
@@ -903,15 +981,15 @@ function renderDetailHTML() {
 }
 
 function renderAlmoxarifadoHTML() {
-  return `<div class="card-info"><table class="data-table"><thead><tr><th>Peça / Material</th><th>Custo (R$)</th><th>Venda (R$)</th><th>Estoque</th><th style="text-align:right;">Ações</th></tr></thead><tbody>${state.almoxarifado.map(a => `<tr><td style="font-weight:600;">${a.nome}</td><td style="color:var(--text-muted);">R$ ${a.custo.toFixed(2)}</td><td style="font-weight:700; color:var(--blue);">R$ ${a.venda.toFixed(2)}</td><td><span class="badge-status" style="background:${a.estoque > 0 ? '#DCFCE7' : '#FEE2E2'}; color:${a.estoque > 0 ? '#166534' : '#B91C1C'}; border:none;">${a.estoque} un.</span></td><td><div class="table-actions"><button class="btn btn-outline btn-sm" onclick="abrirModalAlmox(${a.id})">✏️ Editar</button><button class="btn btn-danger btn-sm" onclick="excluirAlmox(${a.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table></div>`;
+  return `<div class="card-info table-container"><table class="data-table"><thead><tr><th>Peça / Material</th><th>Custo (R$)</th><th>Venda (R$)</th><th>Estoque</th><th style="text-align:right;">Ações</th></tr></thead><tbody>${state.almoxarifado.map(a => `<tr><td style="font-weight:600;">${a.nome}</td><td style="color:var(--text-muted);">R$ ${a.custo.toFixed(2)}</td><td style="font-weight:700; color:var(--blue);">R$ ${a.venda.toFixed(2)}</td><td><span class="badge-status" style="background:${a.estoque > 0 ? '#DCFCE7' : '#FEE2E2'}; color:${a.estoque > 0 ? '#166534' : '#B91C1C'}; border:none;">${a.estoque} un.</span></td><td><div class="table-actions"><button class="btn btn-outline btn-sm" onclick="abrirModalAlmox(${a.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="excluirAlmox(${a.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function renderClientesHTML() {
-  return `<div class="card-info"><table class="data-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th style="text-align:right;">Ações</th></tr></thead><tbody>${state.clientes.map(c => `<tr><td style="font-weight:600;">${c.nome}</td><td>${c.telefone}</td><td>${c.cidade}</td><td><div class="table-actions"><button class="btn btn-outline btn-sm" onclick="abrirModalCliente(${c.id})">✏️ Editar</button><button class="btn btn-danger btn-sm" onclick="excluirCliente(${c.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table></div>`;
+  return `<div class="card-info table-container"><table class="data-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th style="text-align:right;">Ações</th></tr></thead><tbody>${state.clientes.map(c => `<tr><td style="font-weight:600;">${c.nome}</td><td>${c.telefone}</td><td>${c.cidade}</td><td><div class="table-actions"><button class="btn btn-outline btn-sm" onclick="abrirModalCliente(${c.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="excluirCliente(${c.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function renderTecnicosHTML() {
-  return `<div class="card-info"><table class="data-table"><thead><tr><th>Nome</th><th>E-mail de Login</th><th>Cargo</th><th style="text-align:right;">Ações</th></tr></thead><tbody>${state.tecnicos.map(t => `<tr><td style="font-weight:600;">${t.nome}</td><td>${t.email}</td><td><span class="badge-status" style="background:#F8FAFC;">${t.cargo}</span></td><td><div class="table-actions"><button class="btn btn-outline btn-sm" onclick="abrirModalTecnico(${t.id})">✏️ Editar</button>${state.currentUser.id !== t.id ? `<button class="btn btn-danger btn-sm" onclick="excluirTecnico(${t.id})">🗑️</button>` : ''}</div></td></tr>`).join('')}</tbody></table></div>`;
+  return `<div class="card-info table-container"><table class="data-table"><thead><tr><th>Nome</th><th>E-mail de Login</th><th>Cargo</th><th style="text-align:right;">Ações</th></tr></thead><tbody>${state.tecnicos.map(t => `<tr><td style="font-weight:600;">${t.nome}</td><td>${t.email}</td><td><span class="badge-status" style="background:#F8FAFC;">${t.cargo}</span></td><td><div class="table-actions"><button class="btn btn-outline btn-sm" onclick="abrirModalTecnico(${t.id})">✏️</button>${state.currentUser.id !== t.id ? `<button class="btn btn-danger btn-sm" onclick="excluirTecnico(${t.id})">🗑️</button>` : ''}</div></td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function renderRotasHTML() {
