@@ -487,8 +487,19 @@
         <div class="form-group"><label>Telefone</label><input type="text" class="form-control" id="os-telefone" readonly style="background:#F8FAFC;"></div>
         <div class="form-group"><label>Endereço</label><input type="text" class="form-control" id="os-endereco" readonly style="background:#F8FAFC;"></div>
       </div>
+      
+      <!-- NOVOS CAMPOS DE EQUIPAMENTO -->
+      <div style="background: #F8FAFC; padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 16px;">
+        <div style="font-size: 0.8rem; font-weight: 800; color: var(--blue); margin-bottom: 12px; text-transform: uppercase;">Detalhes do Equipamento</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group"><label>Marca</label><input type="text" class="form-control" id="os-marca" placeholder="Ex: LG, Samsung..."></div>
+          <div class="form-group"><label>Modelo</label><input type="text" class="form-control" id="os-modelo" placeholder="Ex: Dual Inverter"></div>
+          <div class="form-group"><label>Capacidade</label><input type="text" class="form-control" id="os-capacidade" placeholder="Ex: 12000 BTUs"></div>
+          <div class="form-group"><label>Nº de Série (S/N)</label><input type="text" class="form-control" id="os-serie" placeholder="Ex: 12345678"></div>
+        </div>
+      </div>
+
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-        <div class="form-group"><label>Modelo Equipamento</label><input type="text" class="form-control" id="os-modelo" placeholder="Ex: Split 12000 BTUs"></div>
         <div class="form-group">
           <label>Prioridade</label>
           <select class="form-control" id="os-prioridade">
@@ -498,6 +509,7 @@
           </select>
         </div>
       </div>
+
       <div class="form-group"><label>Descrição do Problema</label><textarea class="form-control" id="os-nota" placeholder="Descreva o problema relatado..."></textarea></div>
     </div>
     <div class="modal-foot">
@@ -908,7 +920,31 @@ function renderOSGrid() {
   if (state.listTab === 'minhas') list = list.filter(o => o.tecnicoId === state.currentUser.id);
   if (state.search.trim()) { const s = state.search.toLowerCase(); list = list.filter(o => o.cliente.toLowerCase().includes(s) || o.numero.includes(s)); }
   if (list.length === 0) return `<div style="text-align:center;padding:40px;color:var(--text-muted);">Nenhuma OS encontrada.</div>`;
-  return `<div class="os-grid">${list.map(os => `<div class="card-os" onclick="navigate('detail', ${os.id})"><div class="card-left"><div><div class="tipo">${os.tipo}</div><div class="badge-prio ${os.prioridade === 'Alta' ? 'bg-alta' : os.prioridade === 'Baixa' ? 'bg-baixa' : 'bg-media'}">${os.prioridade.toUpperCase()}</div></div><div><div class="ordem-lbl">ORDEM</div><div class="ordem-num">#${os.numero}</div></div><div class="badge-status">${os.status}</div></div><div class="card-right"><div class="card-header"><span class="sem-garantia">${os.garantia ? 'COM GARANTIA' : 'SEM GARANTIA'}</span><span class="tech">👤 ${os.tecnico.toUpperCase()}</span></div><div class="cliente-name">${os.cliente}</div><div class="equip-pill">❄️ ${os.modelo} - S/N: <span>${os.serie}</span></div><div class="local">📍 ${os.cidade}</div><div class="nota">"${os.nota}"</div></div></div>`).join('')}</div>`;
+  
+  return `<div class="os-grid">${list.map(os => `
+    <div class="card-os" onclick="navigate('detail', ${os.id})">
+      <div class="card-left">
+        <div>
+          <div class="tipo">${os.tipo}</div>
+          <div class="badge-prio ${os.prioridade === 'Alta' ? 'bg-alta' : os.prioridade === 'Baixa' ? 'bg-baixa' : 'bg-media'}">${os.prioridade.toUpperCase()}</div>
+        </div>
+        <div>
+          <div class="ordem-lbl">ORDEM</div>
+          <div class="ordem-num">#${os.numero}</div>
+        </div>
+        <div class="badge-status">${os.status}</div>
+      </div>
+      <div class="card-right">
+        <div class="card-header">
+          <span class="sem-garantia">${os.garantia ? 'COM GARANTIA' : 'SEM GARANTIA'}</span>
+          <span class="tech">👤 ${os.tecnico.toUpperCase()}</span>
+        </div>
+        <div class="cliente-name">${os.cliente}</div>
+        <div class="equip-pill">❄️ ${os.marca ? os.marca + ' ' : ''}${os.modelo} ${os.capacidade ? '- ' + os.capacidade : ''}</div>
+        <div class="local">📍 ${os.cidade}</div>
+        <div class="nota">"${os.nota}"</div>
+      </div>
+    </div>`).join('')}</div>`;
 }
 
 function renderDetailHTML() {
@@ -919,7 +955,40 @@ function renderDetailHTML() {
 
   let tabContent = '';
   if (state.currentTab === 'dados') {
-    tabContent = `<div class="detail-body"><div><div class="card-info"><div class="card-info-header">Informações da OS</div><div class="info-row"><span class="info-label">Tipo</span><span class="info-value">${os.tipo}</span></div><div class="info-row"><span class="info-label">Prioridade</span><span class="info-value">${os.prioridade}</span></div><div class="info-row"><span class="info-label">Status</span><span class="info-value">${os.status}</span></div><div class="info-row"><span class="info-label">Problema Relatado</span><span class="info-value" style="font-style:italic;">"${os.nota}"</span></div></div></div><div><div class="card-info"><div class="card-info-header">Cliente</div><div class="info-row"><span class="info-label">Nome</span><span class="info-value">${os.cliente}</span></div><div class="info-row"><span class="info-label">Telefone</span><span class="info-value" style="color:var(--blue);">${os.telefone}</span></div><div class="info-row"><span class="info-label">Endereço</span><span class="info-value">${os.endereco}</span></div></div><div class="card-info"><div class="card-info-header">Técnico Resp.</div><div class="info-row"><span class="info-label">Nome</span><span class="info-value">${os.tecnico}</span></div></div></div></div>`;
+    tabContent = `
+      <div class="detail-body">
+        <div>
+          <div class="card-info">
+            <div class="card-info-header">Informações da OS</div>
+            <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">${os.tipo}</span></div>
+            <div class="info-row"><span class="info-label">Prioridade</span><span class="info-value">${os.prioridade}</span></div>
+            <div class="info-row"><span class="info-label">Status</span><span class="info-value">${os.status}</span></div>
+            <div class="info-row"><span class="info-label">Problema Relatado</span><span class="info-value" style="font-style:italic;">"${os.nota}"</span></div>
+          </div>
+
+          <div class="card-info">
+            <div class="card-info-header">Equipamento</div>
+            <div class="info-row"><span class="info-label">Marca</span><span class="info-value">${os.marca || 'Não informada'}</span></div>
+            <div class="info-row"><span class="info-label">Modelo</span><span class="info-value">${os.modelo || 'Não informado'}</span></div>
+            <div class="info-row"><span class="info-label">Capacidade</span><span class="info-value">${os.capacidade || 'Não informada'}</span></div>
+            <div class="info-row"><span class="info-label">Nº de Série</span><span class="info-value">${os.serie || 'Não informado'}</span></div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="card-info">
+            <div class="card-info-header">Cliente</div>
+            <div class="info-row"><span class="info-label">Nome</span><span class="info-value">${os.cliente}</span></div>
+            <div class="info-row"><span class="info-label">Telefone</span><span class="info-value" style="color:var(--blue);">${os.telefone}</span></div>
+            <div class="info-row"><span class="info-label">Endereço</span><span class="info-value">${os.endereco}</span></div>
+          </div>
+          <div class="card-info">
+            <div class="card-info-header">Técnico Resp.</div>
+            <div class="info-row"><span class="info-label">Nome</span><span class="info-value">${os.tecnico}</span></div>
+          </div>
+        </div>
+      </div>
+    `;
   } else if (state.currentTab === 'diagnostico') {
     tabContent = `<div style="max-width:800px; margin-top:20px;"><div class="card-info"><div class="card-info-header">Laudo Técnico</div><div class="form-group" style="padding:16px;"><textarea class="form-control" onchange="salvarDiagnostico(this.value)">${os.diagnostico || ''}</textarea></div></div></div>`;
   } else if (state.currentTab === 'pecas') {
@@ -980,9 +1049,6 @@ function renderDetailHTML() {
   `;
 }
 
-// ==========================================
-// FUNÇÃO QUE ESTAVA FALTANDO (CORRIGIDA)
-// ==========================================
 function mudarTab(tab) {
   state.currentTab = tab;
   render();
@@ -1008,7 +1074,7 @@ function renderRotasHTML() {
   ativas.forEach(os => { if (!cidades[os.cidade]) cidades[os.cidade] = []; cidades[os.cidade].push(os); });
   let html = '';
   for (const [cidade, osList] of Object.entries(cidades)) {
-    html += `<div class="rota-grupo"><div class="rota-cidade">📍 ${cidade}</div><div class="rota-lista">${osList.map(os => `<div class="rota-item"><div class="rota-info"><h4>#${os.numero} - ${os.cliente}</h4><p>❄️ ${os.modelo} | Téc: ${os.tecnico}</p><div class="end">📌 ${os.endereco}</div></div><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(os.endereco)}" target="_blank" class="btn btn-primary">🗺️ Maps</a></div>`).join('')}</div></div>`;
+    html += `<div class="rota-grupo"><div class="rota-cidade">📍 ${cidade}</div><div class="rota-lista">${osList.map(os => `<div class="rota-item"><div class="rota-info"><h4>#${os.numero} - ${os.cliente}</h4><p>❄️ ${os.marca ? os.marca + ' ' : ''}${os.modelo} | Téc: ${os.tecnico}</p><div class="end">📌 ${os.endereco}</div></div><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(os.endereco)}" target="_blank" class="btn btn-primary">🗺️ Maps</a></div>`).join('')}</div></div>`;
   }
   return `<div style="max-width:900px;">${html}</div>`;
 }
@@ -1025,10 +1091,27 @@ function abrirModalOS(id = null) {
   selectTec.innerHTML = state.tecnicos.map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
   if (id) {
     const os = state.ordens.find(o => o.id == id);
-    if (os) { selectCli.value = os.clienteId; selectTec.value = os.tecnicoId; document.getElementById('os-modelo').value = os.modelo; document.getElementById('os-prioridade').value = os.prioridade; document.getElementById('os-nota').value = os.nota; preencherDadosCliente(); }
+    if (os) { 
+      selectCli.value = os.clienteId; 
+      selectTec.value = os.tecnicoId; 
+      document.getElementById('os-marca').value = os.marca || ''; 
+      document.getElementById('os-modelo').value = os.modelo || ''; 
+      document.getElementById('os-capacidade').value = os.capacidade || ''; 
+      document.getElementById('os-serie').value = os.serie || ''; 
+      document.getElementById('os-prioridade').value = os.prioridade; 
+      document.getElementById('os-nota').value = os.nota; 
+      preencherDadosCliente(); 
+    }
   } else {
     if (state.currentUser.cargo === 'Tecnico') selectTec.value = state.currentUser.id;
-    document.getElementById('os-telefone').value = ""; document.getElementById('os-endereco').value = ""; document.getElementById('os-modelo').value = ""; document.getElementById('os-nota').value = ""; document.getElementById('os-prioridade').value = "Média";
+    document.getElementById('os-telefone').value = ""; 
+    document.getElementById('os-endereco').value = ""; 
+    document.getElementById('os-marca').value = ""; 
+    document.getElementById('os-modelo').value = ""; 
+    document.getElementById('os-capacidade').value = ""; 
+    document.getElementById('os-serie').value = ""; 
+    document.getElementById('os-nota').value = ""; 
+    document.getElementById('os-prioridade').value = "Média";
   }
   abrirModal('modal-os');
 }
@@ -1044,16 +1127,25 @@ function salvarOS() {
   if (!clienteId) { alert("Selecione um cliente."); return; }
   if (!tecnicoId) { alert("Selecione um técnico."); return; }
   const cli = state.clientes.find(c => c.id == clienteId), tec = state.tecnicos.find(t => t.id == tecnicoId), hoje = new Date().toLocaleDateString('pt-BR');
+  
+  const dadosEquipamento = {
+    marca: document.getElementById('os-marca').value,
+    modelo: document.getElementById('os-modelo').value,
+    capacidade: document.getElementById('os-capacidade').value,
+    serie: document.getElementById('os-serie').value
+  };
+
   if (id) {
     const os = state.ordens.find(o => o.id == id);
-    Object.assign(os, { clienteId: cli.id, cliente: cli.nome, telefone: cli.telefone, endereco: cli.endereco, cidade: cli.cidade, tecnicoId: tec.id, tecnico: tec.nome, modelo: document.getElementById('os-modelo').value, prioridade: document.getElementById('os-prioridade').value, nota: document.getElementById('os-nota').value });
+    Object.assign(os, { clienteId: cli.id, cliente: cli.nome, telefone: cli.telefone, endereco: cli.endereco, cidade: cli.cidade, tecnicoId: tec.id, tecnico: tec.nome, prioridade: document.getElementById('os-prioridade').value, nota: document.getElementById('os-nota').value, ...dadosEquipamento });
     registrarHistorico(os.id, "Dados editados");
   } else {
     const novoId = Math.max(0, ...state.ordens.map(o => o.id)) + 1;
     state.ordens.unshift({
       id: novoId, numero: String(novoId).padStart(4, '0'), tipo: "Corretiva", status: "Triagem", garantia: false,
       clienteId: cli.id, cliente: cli.nome, telefone: cli.telefone, endereco: cli.endereco, cidade: cli.cidade,
-      tecnicoId: tec.id, tecnico: tec.nome, prioridade: document.getElementById('os-prioridade').value, modelo: document.getElementById('os-modelo').value, serie: "S/N", abertura: hoje, nota: document.getElementById('os-nota').value,
+      tecnicoId: tec.id, tecnico: tec.nome, prioridade: document.getElementById('os-prioridade').value, abertura: hoje, nota: document.getElementById('os-nota').value,
+      ...dadosEquipamento,
       equipamento: "Climatização", diagnostico: "", horasTecnicas: 0, valorHora: 80.00, kmRodado: 0, valorKm: 2.50, autonomia: 10, precoGasolina: 5.80,
       pecas: [], fotos: [], historico: [{ data: hoje, acao: "OS criada" }]
     });
@@ -1180,7 +1272,9 @@ function imprimirOS() {
     "body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;padding:40px;color:#333;line-height:1.5}.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0077FF;padding-bottom:20px;margin-bottom:20px}.logo h1{margin:0;font-size:28px;color:#0A1B33;letter-spacing:2px}.logo p{margin:0;font-size:12px;color:#0077FF;font-weight:bold;letter-spacing:4px}.os-info{text-align:right}.os-info h2{margin:0;font-size:20px;color:#0A1B33}.os-info p{margin:4px 0;font-size:14px}.section{margin-bottom:20px}.section-title{background:#f0f4f8;padding:8px 12px;font-size:12px;font-weight:bold;color:#0077FF;border-radius:4px;margin-bottom:10px;text-transform:uppercase}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px}.grid div{padding:4px 0}.grid strong{color:#555}table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#f9f9f9;color:#333}.totals-table{margin-top:15px;width:50%;margin-left:auto}.totals-table td{border:none;padding:5px 10px}.totals-table tr.total-row td{font-size:18px;font-weight:bold;color:#16a34a;border-top:2px solid #333}.signatures{display:flex;justify-content:space-between;margin-top:60px}.sig-box{width:45%;border-top:1px solid #333;text-align:center;padding-top:10px;font-size:14px}@media print{body{padding:0}.section-title{-webkit-print-color-adjust:exact}}" +
     '</style></head><body><div class="header"><div class="logo"><h1>AV ARVITA</h1><p>CLIMATIZAÇÃO</p></div><div class="os-info"><h2>ORDEM DE SERVIÇO #' + os.numero + '</h2><p><strong>Data de Abertura:</strong> ' + os.abertura + '</p><p><strong>Status:</strong> ' + os.status + '</p></div></div>' +
     '<div class="section"><div class="section-title">Dados do Cliente</div><div class="grid"><div><strong>Nome:</strong> ' + os.cliente + '</div><div><strong>Telefone:</strong> ' + os.telefone + '</div><div style="grid-column: span 2;"><strong>Endereço:</strong> ' + os.endereco + '</div></div></div>' +
-    '<div class="section"><div class="section-title">Detalhes do Equipamento</div><div class="grid"><div><strong>Equipamento:</strong> ' + os.equipamento + '</div><div><strong>Modelo:</strong> ' + os.modelo + '</div><div><strong>S/N:</strong> ' + os.serie + '</div><div><strong>Técnico Resp.:</strong> ' + os.tecnico + '</div></div></div>' +
+    
+    '<div class="section"><div class="section-title">Detalhes do Equipamento</div><div class="grid"><div><strong>Marca:</strong> ' + (os.marca || '-') + '</div><div><strong>Modelo:</strong> ' + (os.modelo || '-') + '</div><div><strong>Capacidade:</strong> ' + (os.capacidade || '-') + '</div><div><strong>S/N:</strong> ' + (os.serie || '-') + '</div><div><strong>Técnico Resp.:</strong> ' + os.tecnico + '</div></div></div>' +
+    
     '<div class="section"><div class="section-title">Relato e Diagnóstico</div><p style="font-size: 14px;"><strong>Problema Relatado:</strong> ' + os.nota + '</p><p style="font-size: 14px; margin-top: 8px;"><strong>Diagnóstico Técnico:</strong> ' + (os.diagnostico || 'Não informado.') + '</p></div>' +
     '<div class="section"><div class="section-title">Orçamento</div><table><thead><tr><th>Descrição</th><th>Qtd.</th><th>Vlr. Unit.</th><th>Total</th></tr></thead><tbody>' + 
     (os.pecas || []).map(p => '<tr><td>' + p.nome + '</td><td>' + p.qtd + '</td><td>R$ ' + (p.unitVenda || p.unit || 0).toFixed(2).replace('.', ',') + '</td><td>R$ ' + (p.totalVenda || p.total || 0).toFixed(2).replace('.', ',') + '</td></tr>').join('') + 
